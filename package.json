@@ -1,0 +1,13 @@
+{
+  "name": "flyadventure-pruebas-cypress",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:evidencia": "cypress run --expose evidencia=true"
+  },
+  "devDependencies": {
+    "cypress": "^16.2.1"
+  }
+}
