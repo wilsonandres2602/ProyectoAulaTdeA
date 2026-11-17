@@ -1,0 +1,108 @@
+// Clasificación vigente de los D-xx (decisiones del usuario, ver la tabla «Defectos y hallazgos» de
+// ESTADO.md y docs/MAPEO_CASOS.md §3). Aquí solo está lo que no se puede deducir del historial:
+// impacto, tipo, casos, causa y recomendación. Al clasificar un D-xx nuevo, agrégalo aquí.
+// Impacto: el decidido por el usuario; si no lo fijó, sale de la prioridad del caso (P1 → Alto-3,
+// P2 → Medio-2, P3 → Bajo-1), como dice ESTADO.md.
+
+const DEFECTOS = [
+  { id: "D-09", destacado: true, titulo: "El contador de intentos fallidos no se reinicia", impacto: "Alto-3", tipo: "Funcional/Seguridad", asignado: "Back", casos: ["CP-HU002-10"],
+    causa: "El contador de fallos se calcula sobre la tabla de auditoría: ni un login correcto ni el desbloqueo por enlace lo reinician. Tras desbloquear, un solo fallo vuelve a dar 423 (se esperaba 401).",
+    recomendacion: "Llevar el contador en la cuenta (o filtrar la auditoría desde el último login correcto o desbloqueo) y reiniciarlo en ambos eventos (TE-04, RF-043)." },
+  { id: "D-11", titulo: "No hay control en la UI para posponer notificaciones", impacto: "Bajo-1", tipo: "Interfaz", asignado: "Front", casos: ["CP-HU013-07"],
+    causa: "El API de posponer (1 día, 3 días, 1 semana) existe y funciona (CP-HU013-09), pero ningún componente de la UI lo usa.",
+    recomendacion: "Agregar el menú «Posponer» en el centro de notificaciones usando el endpoint existente." },
+  { id: "D-18", destacado: true, titulo: "La sesión nunca vence por inactividad con la pestaña abierta", impacto: "Alto-3", tipo: "Seguridad", asignado: "Front/Back", casos: ["CP-HU002-17", "CP-HU002-18"],
+    causa: "NotifContext consulta /notificaciones cada 30 s y SesionService.validar desliza la sesión en cada petición autenticada: con la pestaña abierta la sesión no expira y el aviso previo de RF-042 nunca aparece (63 consultas en 31 min; X-Sesion-Restante ≈ 1799 s).",
+    recomendacion: "No renovar la sesión con peticiones automáticas (marcar el sondeo como «no actividad» o renovar solo con acciones del usuario) y mostrar el aviso previo." },
+  { id: "D-21", titulo: "El intento de desactivar la 2FA del instructor no queda auditado", impacto: "Alto-3", tipo: "Seguridad/Auditoría", asignado: "Back", casos: ["CP-HU031-01"],
+    causa: "Responde 403 DOBLE_FACTOR_OBLIGATORIO, pero AuditoriaFilter omite /api/auth/ y AuthService no registra el rechazo.",
+    recomendacion: "Registrar en AuthService el rechazo con resultado Denegado (acción propia, p. ej. DOBLE_FACTOR_DESACTIVACION_RECHAZADA)." },
+  { id: "D-22", titulo: "Notas con decimal cero se muestran sin él y porcentajes redondeados", impacto: "Bajo-1", tipo: "Interfaz", asignado: "Front", casos: ["CP-HU029-09"],
+    causa: "NotasCurso.jsx usa String(numero) y el JSON pierde el «.0» («60 %»); fmtPct redondea a entero (87,5 % → «88 %») y la vista previa de informes usa punto decimal.",
+    recomendacion: "Formatear con Intl.NumberFormat('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) en notas, resultados e informes." },
+  { id: "D-23", titulo: "La respuesta que falla sin conexión se pierde en la evaluación", impacto: "Alto-3", tipo: "Funcional", asignado: "Front", casos: ["CP-HU009-08"],
+    causa: "Al guardar sin conexión la respuesta no se reintenta (ni al cambiar de pregunta ni al reconectar) aunque en pantalla se ve marcada; el aviso es el genérico de conexión.",
+    recomendacion: "Encolar las respuestas fallidas y reintentarlas al reconectar o al cambiar de pregunta, con el aviso «Se volverá a intentar…»." },
+  { id: "D-25", titulo: "Comunidad de un curso ajeno sin el mensaje de pertenencia", impacto: "Alto-3", tipo: "Funcional", asignado: "Front", casos: ["CP-HU012-03"],
+    causa: "La UI muestra «Todavía no tienes cursos con comunidad» y no llama al API; «Solo los miembros del curso pueden usar la comunidad.» (403 NO_ES_MIEMBRO) solo existe en el backend.",
+    recomendacion: "Cuando el curso de la ruta no es del usuario, consultar el API y mostrar su mensaje de pertenencia." },
+  { id: "D-26", titulo: "El enlace de puntos no coincide con su nombre accesible", impacto: "Alto-3", tipo: "Accesibilidad", asignado: "Front", casos: ["CP-HU017-04"],
+    causa: "Se ve «N pts» pero se llama «N puntos. Ver mis logros» (axe label-content-name-mismatch, WCAG 2.5.3).",
+    recomendacion: "Que el nombre accesible empiece por el texto visible (p. ej. «N pts · Ver mis logros»)." },
+  { id: "D-27", titulo: "La tabla de /auditoria no se puede desplazar con el teclado", impacto: "Alto-3", tipo: "Accesibilidad", asignado: "Front", casos: ["CP-HU017-04"],
+    causa: "El contenedor con scroll horizontal no es enfocable (axe scrollable-region-focusable, WCAG 2.1.1).",
+    recomendacion: "Dar tabIndex=0, rol region y nombre accesible al contenedor de la tabla." },
+  { id: "D-31", titulo: "El modo privado de la clasificación tarda hasta 10 min", impacto: "Bajo-1", tipo: "Funcional/Privacidad", asignado: "Back", casos: ["CP-HU011-05"],
+    causa: "cambiarPrivacidad no recalcula el ranking y RankingService.obtener reutiliza el guardado hasta 10 min (VIGENCIA).",
+    recomendacion: "Invalidar o recalcular la clasificación al cambiar la privacidad." },
+  { id: "D-32", titulo: "El primer Tab no llega a «Saltar al contenido principal»", impacto: "Medio-2", tipo: "Accesibilidad", asignado: "Front", casos: ["CP-HU017-02"],
+    causa: "AppShell.jsx mueve el foco a <main> al abrir cada pantalla; el primer Tab cae en «Explorar cursos» y el enlace solo se alcanza con 13 Mayús+Tab.",
+    recomendacion: "Al cambiar de pantalla, enfocar el inicio del documento (o el propio enlace de salto) en vez de <main>." },
+  { id: "D-33", titulo: "La tipografía elegida a mano no persiste en otro contexto", impacto: "Medio-2", tipo: "Funcional/Accesibilidad", asignado: "Front", casos: ["CP-HU018-01"],
+    causa: "El servidor guarda la tipografía, pero PrefsContext.jsx la cambia por «Poppins + Inter» porque la marca de elección manual solo está en el localStorage del navegador.",
+    recomendacion: "Guardar en el servidor que la tipografía fue elegida a mano y respetarla al cargar." },
+  { id: "D-34", destacado: true, titulo: "La lección no renderiza el Markdown del contenido", impacto: "Medio-2", tipo: "Interfaz/Accesibilidad", asignado: "Front", casos: ["CP-HU019-01"],
+    causa: "Leccion.jsx pinta el cuerpo como texto plano: no hay encabezados, listas, tablas ni <img alt>; «![Diagrama](…)» se ve literal. Ya estaba en docs/requisitos/auditoria-rf-032-049.md §1.",
+    recomendacion: "Renderizar el Markdown con un componente seguro (sanitizado) que genere los elementos semánticos y el alt de las imágenes." },
+  { id: "D-36", titulo: "Perfil motor: botones de ícono de menos de 44 px de ancho", impacto: "Medio-2", tipo: "Interfaz/Accesibilidad", asignado: "Front", casos: ["CP-HU022-01"],
+    causa: "index.css solo aplica min-height: 3.5rem con data-targets=\"large\"; falta min-width. «Notificaciones» 40×56, «Cerrar panel de perfil» 36×56 y «Expandir menú» 32×56 px.",
+    recomendacion: "Agregar min-width: 3.5rem (o 44 px) a los mismos selectores del perfil motor." },
+  { id: "D-37", destacado: true, titulo: "Editar una evaluación sin alternativa accesible la vuelve «con alternativa»", impacto: "Alto-3", tipo: "Funcional (integridad de datos)", asignado: "Front", casos: ["CP-HU022-02"],
+    causa: "EvaluacionEditor.jsx:17 inicia la casilla con useState(true) sin leer el valor guardado; al cambiar solo el título y guardar, el PUT envía alternativaAccesible: true. El estudiante con perfil motor pasa de «Excluida» a «0 % No presentada» y la evaluación empieza a contar en su nota (HU-029).",
+    recomendacion: "Iniciar el estado con evaluacion?.alternativaAccesible y cubrirlo con una prueba unitaria del formulario." },
+  { id: "D-38", titulo: "«Conceptos clave» sin tildes ni ñ", impacto: "Bajo-1", tipo: "Interfaz/Contenido", asignado: "Back", casos: ["CP-HU023-04"],
+    causa: "TextoApoyo.conceptosClave devuelve las claves de frecuencias(), ya normalizadas (NFD sin marcas): «montaña» → «montana».",
+    recomendacion: "Contar sobre la forma normalizada pero devolver la forma original más frecuente de cada palabra." },
+  { id: "D-40", titulo: "La valoración «No» del Tutor IA no persiste", impacto: "Medio-2", tipo: "Funcional/Datos", asignado: "Front/Back", casos: ["CP-HU024-04"],
+    causa: "RespuestaTutor.util es booleano y empieza en false (no distingue «No» de «sin valorar») y el historial no envía valorado, que es lo que usa el panel para marcar «No».",
+    recomendacion: "Usar un Boolean nulo (o un enum) para util y enviarlo en el historial." },
+  { id: "D-41", titulo: "Respuesta no confiable del tutor mostrada como «SINRESPUESTA»", impacto: "Medio-2", tipo: "Funcional", asignado: "Back", casos: ["CP-HU024-06"],
+    causa: "TutorService.consultar llama a limpiar() antes de comparar con SIN_RESPUESTA y se pierde el guion bajo; el estudiante ve «SINRESPUESTA» y así queda guardado en el historial.",
+    recomendacion: "Comparar el marcador antes de limpiar() (o sobre el texto sin limpiar) y corregir las respuestas ya guardadas." },
+  { id: "D-42", titulo: "Botones «¿Te sirvió?» del tutor sin nombre accesible único", impacto: "Bajo-1", tipo: "Accesibilidad (WCAG 2.4.6 y 4.1.2)", asignado: "Front", casos: ["CP-HU017-06"],
+    causa: "Cada respuesta tiene botones «Sí» y «No» sin aria-label ni referencia a la respuesta: con dos respuestas, «Sí», «No», «Sí», «No».",
+    recomendacion: "Agregar aria-label con la pregunta (p. ej. «Sí, me sirvió la respuesta a …») o agrupar con role=group y aria-labelledby." },
+  { id: "D-45", titulo: "Portada de más de 5 MB por API responde 500", impacto: "Bajo-1", tipo: "Backend/Manejo de errores", asignado: "Back", casos: ["CP-HU025-10"],
+    causa: "MaxUploadSizeExceededException no está manejada en GlobalExceptionHandler y termina como 500 ERROR_INTERNO. No se guarda nada ni se filtra información; el límite coincide con el del navegador.",
+    recomendacion: "Manejar la excepción con 413 (o 400) y el mensaje «La imagen no puede superar los 5 MB.»." },
+];
+
+// Diferencias plan ↔ app (el caso pasa «con ajuste») y qué actualizar en el plan.
+const DIFERENCIAS = {
+  "D-01": "§7.6: los estudiantes de prueba se crean por la UI; no usar los demo (el DataSeeder los reinicia).",
+  "D-02": "§7.7/HU-002: la vigencia del OTP es de 10 min (configurable), no 5.",
+  "D-03": "HU-002: documentar el desbloqueo por enlace (RF-043) y el bloqueo por administrador a los 3 bloqueos.",
+  "D-04": "HU-001: un solo dominio institucional configurable; quitar gmail/outlook.",
+  "D-05": "HU-001: la especialidad del instructor es opcional.",
+  "D-06": "HU-003: la UI valida la política de contraseña antes de enviar; el 400 solo por API.",
+  "D-07": "§7.3: los rechazos quedan como «HTTP <M> (<código>)» con resultado Denegado.",
+  "D-08": "HU-003: en modo desarrollo se muestra el enlace; desactivar VLEARNING_DEV_EXPONER_SECRETOS fuera de local.",
+  "D-10": "HU-012: el campo no deja escribir el carácter 1001; el 400 MENSAJE_LARGO se prueba por API.",
+  "D-12": "HU-002: login de cuenta inactiva da el mensaje genérico de credenciales.",
+  "D-13": "HU-031: el 403 del instructor sin auditoría propia (ver D-21).",
+  "D-14": "§7.15: las E2E son Playwright + @axe-core/playwright en un repositorio aparte (v-learning-e2e), con WCAG 2.1 AA; no Cypress ni cypress-axe dentro de la app.",
+  "D-15": "§3.3: numeración HU→RF como está en el plan (HU-016…023 → RF-015…022).",
+  "D-16": "Textos: la UI tiene lenguaje normal y sencillo; los casos aceptan las dos variantes.",
+  "D-17": "HU-015: documentar el bloqueo automático por 3 entradas maliciosas o 10 denegaciones en 10 min.",
+  "D-19": "§7.12: el cuerpo de error usa timestamp y detalles (no fecha).",
+  "D-20": "HU-030: bloquear, desactivar y activar no piden confirmación.",
+  "D-35": "HU-020: la UI deshabilita «Publicar contenido» con su motivo; el rechazo PUBLICACION_RECHAZADA_NO_CONFORME solo por API (CP-HU020-08).",
+  "D-39": "HU-024: el aviso con Ollama caído es «El tutor no está disponible en este momento…».",
+  "D-43": "HU-025: la portada > 5 MB se rechaza en el navegador sin enviarse; el servidor se prueba por API (CP-HU025-10).",
+  "D-44": "HU-025: la selección única solo deja una correcta; el 400 OPCIONES_INVALIDAS solo por API (CP-HU025-11).",
+  "D-46": "HU-027: tras calificar, «Editar entrega» queda deshabilitado con «Ya fue calificada.» en vez de ocultarse.",
+};
+const HALLAZGOS = ["D-24", "D-28", "D-29", "D-30", "D-47"];
+
+// Detalle de los hallazgos que conviene comunicar al equipo de la app (no son defectos ni abren incidente).
+const HALLAZGOS_DETALLE = {
+  "D-47": {
+    titulo: "Los secretos de desarrollo se exponen por defecto",
+    tipo: "Configuración/Seguridad",
+    causa: "En backend/learning-platform/src/main/resources/application.properties, vlearning.dev.exponer-secretos=${VLEARNING_DEV_EXPONER_SECRETOS:true}: si nadie fija la variable, la API devuelve el código OTP, el enlace de recuperación (y el de desbloqueo) y la UI los muestra en pantalla. El DataSeeder solo lo advierte en el log.",
+    recomendacion: "Cambiar el valor por defecto a false (${VLEARNING_DEV_EXPONER_SECRETOS:false}) y activarlo solo en desarrollo y en el CI aislado, que ya fijan la variable en true. Hallazgo de la app: no se corrige desde este repositorio.",
+  },
+};
+const PENDIENTES = [];
+
+module.exports = { DEFECTOS, DIFERENCIAS, HALLAZGOS, HALLAZGOS_DETALLE, PENDIENTES };

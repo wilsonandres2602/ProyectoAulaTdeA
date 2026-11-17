@@ -1,0 +1,86 @@
+[
+  {
+    "enunciado": "Vas a aprender a usar una aplicación nueva en tu celular. ¿Qué haces primero?",
+    "VISUAL": "Miro capturas de pantalla o un diagrama paso a paso.",
+    "AUDITIVO": "Le pido a alguien que me explique en voz alta cómo se usa.",
+    "LECTURA_ESCRITURA": "Leo las instrucciones escritas o la ayuda de la aplicación.",
+    "KINESTESICO": "La abro y pruebo los botones hasta entenderla."
+  },
+  {
+    "enunciado": "Alguien te pide indicaciones para llegar a un lugar. ¿Cómo prefieres dárselas?",
+    "VISUAL": "Dibujo un mapa sencillo.",
+    "AUDITIVO": "Se lo explico hablando, paso a paso.",
+    "LECTURA_ESCRITURA": "Se lo escribo en una lista de pasos.",
+    "KINESTESICO": "Lo acompaño o le digo que se guíe caminando por los lugares conocidos."
+  },
+  {
+    "enunciado": "Vas a cocinar una receta nueva. ¿Qué te ayuda más?",
+    "VISUAL": "Ver fotos o un video del resultado y de cada paso.",
+    "AUDITIVO": "Escuchar a alguien contarme cómo se prepara.",
+    "LECTURA_ESCRITURA": "Leer la receta con calma, con ingredientes y cantidades.",
+    "KINESTESICO": "Ponerme a cocinar y ajustar sobre la marcha."
+  },
+  {
+    "enunciado": "Te preparas para un examen. ¿Qué técnica usas con más frecuencia?",
+    "VISUAL": "Hago esquemas, mapas mentales o subrayo con colores.",
+    "AUDITIVO": "Me explico el tema en voz alta o lo discuto con compañeros.",
+    "LECTURA_ESCRITURA": "Hago resúmenes escritos y los releo.",
+    "KINESTESICO": "Resuelvo ejercicios y ejemplos reales."
+  },
+  {
+    "enunciado": "En clase, ¿qué hace que entiendas mejor un tema?",
+    "VISUAL": "Que se usen gráficos, diagramas o imágenes.",
+    "AUDITIVO": "Que se explique oralmente y se pueda conversar.",
+    "LECTURA_ESCRITURA": "Que haya apuntes y lecturas para repasar.",
+    "KINESTESICO": "Que haya demostraciones y práctica con casos reales."
+  },
+  {
+    "enunciado": "Quieres recordar algo importante. ¿Cómo lo recuerdas mejor después?",
+    "VISUAL": "Recuerdo cómo se veía: colores, lugar, imágenes.",
+    "AUDITIVO": "Recuerdo lo que se dijo y cómo se dijo.",
+    "LECTURA_ESCRITURA": "Lo anoto y recuerdo lo que escribí.",
+    "KINESTESICO": "Recuerdo lo que estaba haciendo en ese momento."
+  },
+  {
+    "enunciado": "Vas a comprar un aparato nuevo (por ejemplo, unos audífonos). ¿Cómo decides?",
+    "VISUAL": "Comparo fotos y el diseño.",
+    "AUDITIVO": "Pregunto opiniones o escucho reseñas en audio o video.",
+    "LECTURA_ESCRITURA": "Leo las especificaciones y los comentarios escritos.",
+    "KINESTESICO": "Lo pruebo en la tienda antes de decidir."
+  },
+  {
+    "enunciado": "En un trabajo en grupo, ¿qué parte prefieres hacer?",
+    "VISUAL": "Diseñar la presentación, los gráficos o las imágenes.",
+    "AUDITIVO": "Exponer y explicar las ideas al grupo.",
+    "LECTURA_ESCRITURA": "Redactar el informe o los documentos.",
+    "KINESTESICO": "Construir el prototipo o hacer la parte práctica."
+  },
+  {
+    "enunciado": "Un profesor te va a dar retroalimentación sobre tu trabajo. ¿Cómo la prefieres?",
+    "VISUAL": "Con ejemplos marcados directamente sobre mi trabajo.",
+    "AUDITIVO": "En una conversación, para poder preguntar.",
+    "LECTURA_ESCRITURA": "Con comentarios escritos y detallados.",
+    "KINESTESICO": "Con ejemplos prácticos de qué hacer distinto."
+  },
+  {
+    "enunciado": "En tu tiempo libre quieres aprender algo nuevo. ¿Qué eliges?",
+    "VISUAL": "Videos con muchas imágenes o animaciones.",
+    "AUDITIVO": "Podcasts, charlas o clases en audio.",
+    "LECTURA_ESCRITURA": "Libros, artículos o tutoriales escritos.",
+    "KINESTESICO": "Talleres o proyectos donde hago cosas con las manos."
+  },
+  {
+    "enunciado": "Quieres entender cómo funciona algo, por ejemplo un motor. ¿Qué te ayuda más?",
+    "VISUAL": "Ver una animación o un esquema.",
+    "AUDITIVO": "Escuchar la explicación de alguien que sepa.",
+    "LECTURA_ESCRITURA": "Leer un artículo bien explicado.",
+    "KINESTESICO": "Manipular un modelo o una simulación."
+  },
+  {
+    "enunciado": "Piensa en tu curso en línea ideal. ¿Cómo sería?",
+    "VISUAL": "Con infografías y videos.",
+    "AUDITIVO": "Con clases en audio, podcasts y conversación.",
+    "LECTURA_ESCRITURA": "Con textos claros, resúmenes y glosarios.",
+    "KINESTESICO": "Con simulaciones y actividades interactivas."
+  }
+]
