@@ -1,32 +1,83 @@
-# 🏁 TuneIT — Pruebas Automatizadas E2E en Cypress (Flujo Crítico)
+# 🏁 TuneIT — Plataforma Desplegada en Vercel y Pruebas E2E en Cypress
 
-Suite de pruebas End-to-End (E2E) del Flujo Crítico de **TuneIT**, apuntando al despliegue en producción (`https://tuneit-chi.vercel.app`).
+[![Estado Despliegue Vercel](https://img.shields.io/badge/Vercel_Producci%C3%B3n-Online-00f0ff?style=for-the-badge&logo=vercel&logoColor=white)](https://tuneit-chi.vercel.app/)
+[![Pruebas Cypress E2E](https://img.shields.io/badge/Cypress_E2E-100%25_Aprobado-10b981?style=for-the-badge&logo=cypress&logoColor=white)](./cypress/reports/reporte_pruebas_tuneit.html)
 
-## 📋 Etapas del Flujo Crítico Evaluadas (`cypress/e2e/flujo_critico_tuneit.cy.ts`)
+---
 
-1. **Etapa 1 — Autenticación e Inicio de Sesión (`POST /api/v1/auth/login`):**
-   - Acceso a la plataforma como visitante, prueba del widget de telemetría e inicio de sesión con validación de código HTTP `200 OK`.
-2. **Etapa 2 — Registro y Selección de Vehículo en Garaje (`POST /api/v1/vehicles`):**
-   - Creación de vehículo (*Volkswagen Golf GTI MK7.5 - 230 HP / 350 Nm*), validación de nivel de confianza (`Dyno Verificado`) y activación en el garaje.
-3. **Etapa 3 — Simulación Dinamométrica y Recomendaciones Técnicas (`POST /api/v1/estimate`):**
-   - Selección de piezas del catálogo (*Downpipe*, *Admisión de Aire Frío* e *Intercooler Frontal de 85 mm*), cálculo de curvas de potencia/torque y marcado del checklist obligatorio (*Reprogramación de ECU Stage 2*).
-4. **Etapa 4 — Guardado y Persistencia del Proyecto (`POST /api/v1/builds`):**
-   - Registro del proyecto `Golf GTI Stage 2 - Flujo Crítico` y verificación en el *Historial de Builds Guardados*.
+## 🌐 Enlace Oficial del Despliegue en Producción (Vercel)
 
-## 📂 Estructura de Archivos
+👉 **URL Pública de la Aplicación:** **[https://tuneit-chi.vercel.app/](https://tuneit-chi.vercel.app/)**
 
-- `cypress/e2e/flujo_critico_tuneit.cy.ts`: Script principal de la prueba E2E del flujo crítico.
-- `cypress/reports/reporte_pruebas_tuneit.html`: Reporte ejecutivo visual en HTML con matriz de resultados y capturas de evidencia.
-- `cypress/screenshots/`: Evidencias fotográficas PNG capturadas automáticamente en cada etapa.
-- `cypress.config.ts`: Configuración de Cypress y generador automático de reportes.
+La plataforma **TuneIT** se encuentra desplegada en la nube mediante **Vercel** en una arquitectura híbrida que integra:
+- **Frontend SPA:** React 19 + TypeScript + Vite + Tailwind CSS (`frontend/dist`).
+- **Backend Serverless API:** Python + FastAPI expuesto mediante Vercel Serverless Functions (`api/index.py` y `vercel.json`).
+- **Base de Datos Cloud:** PostgreSQL alojado en **Supabase** conectado mediante SQLAlchemy.
 
-## 🚀 Cómo Ejecutar las Pruebas
+### ⚙️ Configuración de Despliegue en Vercel (`vercel.json` y `api/index.py`)
 
-```bash
-npm install cypress --save-dev
-npx cypress open
+**`vercel.json`:**
+```json
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    }
+  ]
+}
 ```
-O para ejecutar por consola y regenerar el reporte:
-```bash
-npx cypress run --spec "cypress/e2e/flujo_critico_tuneit.cy.ts"
+
+**`api/index.py` (Puente Serverless FastAPI):**
+```python
+import os
+import sys
+
+backend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend")
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
+
+from app.main import app
 ```
+
+---
+
+## 🧪 Suite de Pruebas Automatizadas E2E en Cypress (Flujo Crítico)
+
+Las pruebas automatizadas en Cypress apuntan directamente al despliegue en vivo (`https://tuneit-chi.vercel.app`) y validan las **4 etapas del Flujo Crítico de Negocio** de principio a fin:
+
+| Etapa | Caso de Prueba Validado | Endpoint REST API Verificado | Evidencia Fotográfica | Estado |
+| :---: | :--- | :--- | :--- | :---: |
+| **1** | **Autenticación e Inicio de Sesión** | `POST /api/v1/auth/login (200 OK)` | [`01_etapa1_login_exitoso.png`](./cypress/screenshots/01_etapa1_login_exitoso.png) | ✅ Aprobado |
+| **2** | **Registro y Activación de Vehículo en Garaje** | `POST /api/v1/vehicles (200 OK)` | [`02_etapa2_vehiculo_registrado.png`](./cypress/screenshots/02_etapa2_vehiculo_registrado.png) | ✅ Aprobado |
+| **3** | **Simulación Dinamométrica (Dyno AI) y Checklist ECU** | `POST /api/v1/estimate (200 OK)` | [`03_etapa3_simulacion_dyno_checklist.png`](./cypress/screenshots/03_etapa3_simulacion_dyno_checklist.png) | ✅ Aprobado |
+| **4** | **Guardado y Persistencia del Proyecto (Build)** | `POST /api/v1/builds (200 OK)` | [`04_etapa4_build_guardado_historial.png`](./cypress/screenshots/04_etapa4_build_guardado_historial.png) | ✅ Aprobado |
+
+---
+
+## 📂 Estructura de Archivos en este Directorio (`tuneit/`)
+
+- [`cypress/e2e/flujo_critico_tuneit.cy.ts`](./cypress/e2e/flujo_critico_tuneit.cy.ts): Código fuente completo de la prueba E2E paso a paso.
+- [`cypress/reports/reporte_pruebas_tuneit.html`](./cypress/reports/reporte_pruebas_tuneit.html): Reporte ejecutivo visual en HTML con matriz de resultados y capturas incrustadas.
+- [`cypress/screenshots/`](./cypress/screenshots/): Evidencias fotográficas PNG capturadas automáticamente por Cypress en cada etapa.
+- [`cypress.config.ts`](./cypress.config.ts): Configuración de Cypress conectada a `https://tuneit-chi.vercel.app` y generador automático de reportes.
+- [`vercel.json`](./vercel.json) y [`api/index.py`](./api/index.py): Archivos de configuración del despliegue en Vercel.
+
+---
+
+## 🚀 Cómo Ejecutar las Pruebas Localmente
+
+1. Instalar dependencias:
+   ```bash
+   npm install cypress --save-dev
+   ```
+2. Abrir la interfaz visual de Cypress:
+   ```bash
+   npx cypress open
+   ```
+3. O ejecutar por consola generando el reporte HTML y capturas automáticamente:
+   ```bash
+   npx cypress run --spec "cypress/e2e/flujo_critico_tuneit.cy.ts"
+   ```
